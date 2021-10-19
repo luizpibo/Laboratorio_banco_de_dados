@@ -1,4 +1,11 @@
+DROP schema if exists escola_de_musica;
 CREATE schema if not exists escola_de_musica;
+
+drop database if exists escola_de_musica; -- excluir database
+
+create database if not exists escola_de_musica
+default character set utf8 -- uft8 (8-bit Unicode Transformation Format - Pode representar qualquer caracter universal padrão do Unicode, sendo também compatível com o ASCII)
+default collate utf8_general_ci;
 
 use escola_de_musica;
 
@@ -7,7 +14,7 @@ CREATE TABLE IF NOT EXISTS pessoa (
     id int not null AUTO_INCREMENT,
     nome varchar(50) not null,
     telefone varchar(17) not null,
-    cpf varchar(14),
+    cpf varchar(11),
     primary key (id)
 );
 
