@@ -1,4 +1,4 @@
-CREATE schema if not exists escola_de_musica;
+CREATE schema if not exists 'escola_de_musica' default character set utf8;
 
 use escola_de_musica;
 
