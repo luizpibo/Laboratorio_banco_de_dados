@@ -33,26 +33,18 @@ INSERT INTO funcionario VALUES
 
 -- Professores
 INSERT INTO professor VALUES
-(1,1),
-(2,2),
-(3,3),
-(4,4);
+(1,1),(2,2),(3,3),(4,4);
 
 -- Alunos
 INSERT INTO aluno VALUES
-(1,3),
-(2,4),
-(3,5),
-(4,6),
-(5,7),
-(6,8);
+(1,3),(2,4),(3,5),(4,6),(5,7),(6,8);
 
 -- Instrumentos
 INSERT INTO instrumento VALUES
 (1,"saxofone"),
 (2,"trompete"),
-(3,"clarinete"),
-(4,"flauta"),
+(3,"flauta"),
+(4,"clarinete"),
 (5,"baixoAcustico");
 
 -- Aulas
@@ -64,6 +56,33 @@ INSERT INTO aula VALUES
 (5,5,1, "baixoAcustico", 55, "www.EMB.gov.br/baixoAcustico");
 
 -- Apresentações
+INSERT INTO apresentacao VALUES
+(1, '2021-01-01', 'virada de ano'),
+(2, '2019-12-25', 'apresentação de natal'),
+(3, '2021-10-31', 'halloween');
 
 -- Provas
+INSERT INTO prova VALUES
+(1, 1, 1, 'prova teste', 10.00),
+(2, 1, 2, 'prova teste', 05.00),
+(3, 1, 3, 'prova teste', 07.00);
 
+-- Aluno_has_instrumento
+INSERT INTO aluno_has_instrumento VALUES
+(1,1),(2,2),(3,3),(4,4),(5,5),(6,1),(1,5),(6,2);
+
+-- aluno_has_aula
+INSERT INTO aluno_has_aula VALUES
+(1,1),(1,5),(2,2),(3,3),(4,4),(5,5),(1,5),(6,2),(1,3);
+
+-- Aluno_has_apresentacao
+INSERT INTO aluno_has_apresentacao VALUES
+(3,1),(4,2),(5,1),(6,2),(1,3),(2,3);
+
+-- Professor_has_apresentacao
+INSERT INTO professor_has_apresentacao VALUES
+(1,1),(1,2),(2,1),(2,2),(3,3),(4,3),(1,3);
+
+-- Instrumento_has_apresentacao
+INSERT INTO instrumento_has_apresentacao VALUES
+(3,1),(5,1),(4,2),(2,3),(1,3);
