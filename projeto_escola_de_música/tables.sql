@@ -9,7 +9,7 @@ default collate utf8_general_ci;
 
 use escola_de_musica;
 
--- table 
+-- table pessoa
 CREATE TABLE IF NOT EXISTS pessoa (
     id int not null AUTO_INCREMENT,
     nome varchar(50) not null,
@@ -57,9 +57,12 @@ CREATE TABLE IF NOT EXISTS professor (
 -- table aula
 CREATE TABLE IF NOT EXISTS aula (
     id INT NOT NULL AUTO_INCREMENT,
-    descricao VARCHAR(255) NOT NULL,
+	id_instrumento INT NOT NULL, 
+	id_professor INT NOT NULL,   
+descricao VARCHAR(255) NOT NULL,
     tempo_duracao INT NOT NULL,
     link_aula VARCHAR(150) NOT NULL,
+	
     PRIMARY KEY (id)
 );
 
@@ -75,10 +78,12 @@ CREATE TABLE IF NOT EXISTS apresentacao (
 CREATE TABLE IF NOT EXISTS prova (
     id INT NOT NULL AUTO_INCREMENT,
     id_aula INT NOT NULL,
+	id_aluno INT NOT NULL,
     descricao VARCHAR(255),
     nota DECIMAL(2, 2),
     PRIMARY KEY (id),
-    FOREIGN KEY (id_aula) REFERENCES aula (id)
+    FOREIGN KEY (id_aula) REFERENCES aula (id),
+	FOREIGN KEY (id_aluno) REFERENCES aluno (id)
 );
 
 -- table instrumento
