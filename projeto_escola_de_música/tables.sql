@@ -6,7 +6,22 @@ DEFAULT COLLATE utf8_general_ci;
 
 USE escola_de_musica;-- selecionar banco de dados
 
+<<<<<<< HEAD
 -- usuario
+=======
+use escola_de_musica;
+
+-- table pessoa
+CREATE TABLE IF NOT EXISTS pessoa (
+    id int not null AUTO_INCREMENT,
+    nome varchar(50) NOT NULL,
+    telefone varchar(17) NOT NULL,
+    cpf varchar(11),
+    primary key (id)
+);
+
+-- table usuario
+>>>>>>> 33ef8303d1ef3c9a2bf726e72a804504d4fb9464
 CREATE TABLE IF NOT EXISTS usuario (
   id INT(11) NOT NULL AUTO_INCREMENT,
   login VARCHAR(50) NOT NULL,
@@ -53,10 +68,24 @@ CREATE TABLE IF NOT EXISTS professor (
     REFERENCES usuario (id)
 );
 
+<<<<<<< HEAD
 -- professor
 INSERT INTO professor VALUES
 (1, 8205.36, '2021-01-30',1),
 (2, 1080.56, '2011-05-23',2);
+=======
+-- table aula
+CREATE TABLE IF NOT EXISTS aula (
+    id INT NOT NULL AUTO_INCREMENT,
+	id_instrumento INT NOT NULL, 
+	id_professor INT NOT NULL,   
+	descricao VARCHAR(255) NOT NULL,
+    tempo_duracao INT NOT NULL,
+    link_aula VARCHAR(150) NOT NULL,
+	
+    PRIMARY KEY (id)
+);
+>>>>>>> 33ef8303d1ef3c9a2bf726e72a804504d4fb9464
 
 -- apresentacao 
 CREATE TABLE IF NOT EXISTS apresentacao (
@@ -113,6 +142,7 @@ INSERT INTO aula VALUES
 
 -- prova
 CREATE TABLE IF NOT EXISTS prova (
+<<<<<<< HEAD
   id INT(11) NOT NULL AUTO_INCREMENT,
   descricao VARCHAR(35) NOT NULL,
   nota DECIMAL(3,2) NOT NULL,
@@ -260,3 +290,67 @@ WHERE a.apresentacao_id = 3 ;
 SELECT nome 
 FROM instrumento as i, instrumento_has_apresentacao as ia 
 WHERE ia.apresentacao_id = 3 GROUP BY(ia.apresentacao_id);
+=======
+    id INT NOT NULL AUTO_INCREMENT,
+    id_aula INT NOT NULL,
+	id_aluno INT NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    nota DECIMAL(4, 2) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id_aula) REFERENCES aula (id),
+	FOREIGN KEY (id_aluno) REFERENCES aluno (id)
+);
+
+-- table instrumento
+CREATE TABLE IF NOT EXISTS instrumento (
+    id INT NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(30) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+
+-- aluno_has_instrumento
+CREATE TABLE IF NOT EXISTS aluno_has_instrumento (
+	id_aluno INT NOT NULL,
+    id_instrumento INT NOT NULL,
+    FOREIGN KEY (id_aluno) REFERENCES aluno (id),
+    FOREIGN KEY (id_instrumento) REFERENCES instrumento (id),
+    PRIMARY KEY (id_aluno, id_instrumento)
+);
+
+-- aluno_has_apresentacao
+CREATE TABLE IF NOT EXISTS aluno_has_apresentacao (
+	id_aluno INT NOT NULL,
+    id_apresentacao INT NOT NULL,
+	FOREIGN KEY (id_aluno) REFERENCES aluno (id),
+    FOREIGN KEY (id_apresentacao) REFERENCES apresentacao (id),
+    PRIMARY KEY (id_aluno, id_apresentacao)
+);
+
+-- aluno_has_aula
+CREATE TABLE IF NOT EXISTS aluno_has_aula (
+	id_aluno INT NOT NULL,
+    id_aula INT NOT NULL,
+	FOREIGN KEY (id_aluno) REFERENCES aluno (id),
+    FOREIGN KEY (id_aula) REFERENCES aula (id),
+    PRIMARY KEY (id_aluno, id_aula)
+);
+
+-- professor_has_apresentação
+CREATE TABLE IF NOT EXISTS professor_has_apresentacao (
+	id_professor INT NOT NULL,
+    id_apresentacao INT NOT NULL,
+	FOREIGN KEY (id_professor) REFERENCES professor (id),
+    FOREIGN KEY (id_apresentacao) REFERENCES apresentacao (id),
+    PRIMARY KEY (id_professor, id_apresentacao)
+);
+
+-- instrumento_has_apresentacao
+CREATE TABLE IF NOT EXISTS instrumento_has_apresentacao (
+	id_instrumento INT NOT NULL,
+    id_apresentacao INT NOT NULL,
+	FOREIGN KEY (id_instrumento) REFERENCES instrumento (id),
+    FOREIGN KEY (id_apresentacao) REFERENCES apresentacao (id),
+    PRIMARY KEY (id_instrumento, id_apresentacao)
+);
+>>>>>>> 33ef8303d1ef3c9a2bf726e72a804504d4fb9464
