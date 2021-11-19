@@ -1,3 +1,12 @@
+-- SELECT * from usuario;
+-- SELECT * from aluno;
+-- SELECT * from professor;
+-- SELECT * from apresentacao;
+-- SELECT * from instrumento;
+
+-- ALTER TABLE usuario ADD CONSTRAINT login UNIQUE (login);
+
+
 DROP DATABASE IF EXISTS escola_de_musica; -- excluir database
 
 CREATE DATABASE IF NOT EXISTS escola_de_musica
@@ -9,11 +18,11 @@ USE escola_de_musica;-- selecionar banco de dados
 -- usuario
 CREATE TABLE IF NOT EXISTS usuario (
   id SERIAL PRIMARY KEY,
-  login VARCHAR(50) NOT NULL,
+  login VARCHAR(50) NOT NULL UNIQUE,
   senha VARCHAR(50) NOT NULL,
   nome VARCHAR(50) NOT NULL,
   telefone VARCHAR(12) NOT NULL,
-  cpf CHAR(15) NOT NULL
+  cpf CHAR(15) NOT NULL UNIQUE
 );
 
 INSERT INTO usuario (login,senha,nome,telefone,cpf) 
@@ -74,7 +83,7 @@ VALUES
 -- instrumento
 CREATE TABLE IF NOT EXISTS instrumento (
   id SERIAL PRIMARY KEY,
-  nome VARCHAR(70) NOT NULL
+  nome VARCHAR(70) NOT NULL UNIQUE
 );
 
 INSERT INTO instrumento (nome)
@@ -214,3 +223,31 @@ VALUES
 (4, 6, 1),
 (1, 3, 2),
 (2, 4, 4);
+
+-- selecionando todos os dados do usuario onde o login seja igual a Leticia6
+SELECT * 
+FROM usuario
+WHERE login = 'Leticia6';
+
+-- selecionando todos os dados do usuario onde o login seja diferente de Leticia6
+SELECT * 
+FROM usuario
+WHERE login <> 'Leticia6';
+-- WHERE login != 'Leticia6';
+
+-- selecionando todos os dados do usuario onde o login seja parecidos com leticia
+SELECT * 
+FROM usuario
+WHERE login LIKE 'leticia';
+
+-- selecionando todos os dados do usuario onde o login termina com algo parecido com 6
+SELECT * 
+FROM usuario
+WHERE login LIKE '%6';
+
+-- selecionando todos os dados do usuario onde o login não termina com algo parecido com 6
+SELECT * 
+FROM usuario
+WHERE login NOT LIKE '%6';
+
+
