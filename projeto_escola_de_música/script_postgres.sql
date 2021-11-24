@@ -238,7 +238,7 @@ WHERE login <> 'Leticia6';
 -- selecionando todos os dados do usuario onde o login seja parecidos com leticia
 SELECT * 
 FROM usuario
-WHERE login LIKE 'leticia';
+WHERE login LIKE 'Leticia_';
 
 -- selecionando todos os dados do usuario onde o login termina com algo parecido com 6
 SELECT * 
@@ -249,5 +249,33 @@ WHERE login LIKE '%6';
 SELECT * 
 FROM usuario
 WHERE login NOT LIKE '%6';
+
+-- selecionando todas as paresentações que ocorreram em uma data maior(DEPOIS) que 2021-01-01
+SELECT *
+FROM apresentacao
+WHERE data_apresentacao >= '2021-01-01';
+
+-- selecionando todas as apresentações que ocorreram em entre 2021-01-01 e 2021-12-01
+SELECT *
+FROM apresentacao
+WHERE data_apresentacao BETWEEN '2021-01-01' AND '2021-12-01';
+
+-- selecionando todas as aulas e com o tempo de duração em ordem cresente
+SELECT * 
+FROM aula
+ORDER BY tempoduracao DESC;
+
+-- selecionando todas as aulas com o tempo de duracao maior que 55 e que tenham sido aplicadas pelo professor com id 2
+SELECT * 
+FROM aula
+WHERE tempoduracao>55 AND professor_id = 2;
+
+-- selecionando todas as aulas com o tempo de duracao maior que 55 e que tenham sido aplicadas pelo professor com id 2 ou 1
+SELECT * 
+FROM aula
+WHERE tempoduracao>55 AND (professor_id = 2 OR professor_id = 1);
+
+--
+
 
 
