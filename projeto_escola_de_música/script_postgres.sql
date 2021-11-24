@@ -3,17 +3,20 @@
 -- SELECT * from professor;
 -- SELECT * from apresentacao;
 -- SELECT * from instrumento;
-
 -- ALTER TABLE usuario ADD CONSTRAINT login UNIQUE (login);
 
 
-DROP DATABASE IF EXISTS escola_de_musica; -- excluir database
+-- Seleciona todas as informacoes das conexoes ativas do banco de dados
+-- SELECT *
+-- FROM pg_stat_activity
+-- WHERE datname = 'escola_de_musica';
 
-CREATE DATABASE IF NOT EXISTS escola_de_musica
-DEFAULT CHARACTER SET utf8 -- uft8 (8-bit Unicode Transformation Format - Pode representar qualquer caracter universal padrão do Unicode, sendo também compatível com o ASCII)
-DEFAULT COLLATE utf8_general_ci;
+-- Sumary
+-- Creates, inserts, alters 
+-- Selects básicos
+-- Selects joins
 
-USE escola_de_musica;-- selecionar banco de dados
+DROP DATABASE IF EXISTS escola_de_musica; -- excluir database se existir
 
 -- usuario
 CREATE TABLE IF NOT EXISTS usuario (
@@ -41,7 +44,7 @@ CREATE TABLE IF NOT EXISTS aluno (
   usuario_id SERIAL UNIQUE,
   PRIMARY KEY (id, usuario_id),
     FOREIGN KEY (usuario_id)
-    REFERENCES usuario (id)
+    REFERENCES usuario (id) ON DELETE CASCADE
 );
 
 INSERT INTO aluno (usuario_id) 
@@ -58,7 +61,7 @@ CREATE TABLE IF NOT EXISTS professor (
   data_admicao DATE NOT NULL,
   usuario_id SERIAL NOT NULL UNIQUE,
   PRIMARY KEY (id, usuario_id),
-  FOREIGN KEY (usuario_id) REFERENCES usuario (id)
+  FOREIGN KEY (usuario_id) REFERENCES usuario (id) ON DELETE CASCADE
 );
 
 INSERT INTO professor (salarioBase, data_admicao, usuario_id) 
@@ -105,9 +108,9 @@ CREATE TABLE IF NOT EXISTS aula (
   professor_usuario_id SERIAL NOT NULL,
   PRIMARY KEY (id, professor_id, professor_usuario_id),
 	FOREIGN KEY (instrumento_id)
-    REFERENCES instrumento (id),
+    REFERENCES instrumento (id) ON DELETE CASCADE,
     FOREIGN KEY (professor_id , professor_usuario_id)
-    REFERENCES professor (id , usuario_id)
+    REFERENCES professor (id , usuario_id) ON DELETE CASCADE
 );
 
 INSERT INTO aula (descricao, tempoDuracao, linkAula, instrumento_id, professor_id, professor_usuario_id) 
@@ -130,9 +133,9 @@ CREATE TABLE IF NOT EXISTS prova (
   aula_professor_usuario_id SERIAL,
   PRIMARY KEY (id, aluno_id, aluno_usuario_id, aula_id, aula_professor_id, aula_professor_usuario_id),
     FOREIGN KEY (aluno_id , aluno_usuario_id)
-    REFERENCES aluno (id , usuario_id),
+    REFERENCES aluno (id , usuario_id) ON DELETE CASCADE,
     FOREIGN KEY (aula_id , aula_professor_id , aula_professor_usuario_id)
-    REFERENCES aula (id , professor_id , professor_usuario_id)
+    REFERENCES aula (id , professor_id , professor_usuario_id) ON DELETE CASCADE
 );
 
 INSERT INTO prova (descricao, nota, aluno_id, aluno_usuario_id, aula_id, aula_professor_id, aula_professor_usuario_id)
@@ -141,38 +144,38 @@ VALUES
 ('prova trompete', 0.5, 3, 5, 2, 2, 2);
 
 -- profesores presentes nas apresentações
-CREATE TABLE IF NOT EXISTS professor_has_apresentacao (
+CREATE TABLE IF NOT EXISTS apresentacao_professor (
   professor_id SERIAL,
   professor_usuario_id SERIAL,
   apresentacao_id SERIAL,
   PRIMARY KEY (professor_id, professor_usuario_id, apresentacao_id),
     FOREIGN KEY (professor_id , professor_usuario_id)
-    REFERENCES professor (id , usuario_id),
+    REFERENCES professor (id , usuario_id) ON DELETE CASCADE,
     FOREIGN KEY (apresentacao_id)
-    REFERENCES apresentacao (id)
+    REFERENCES apresentacao (id) ON DELETE CASCADE
 );
 
-INSERT INTO professor_has_apresentacao (professor_id, professor_usuario_id, apresentacao_id)
+INSERT INTO apresentacao_professor (professor_id, professor_usuario_id, apresentacao_id)
 VALUES
 (1, 1, 1),
 (1, 1, 2),
 (2, 2, 3),
-(2, 2, 4);
+(2, 2, 2);
 
 
 -- alunos presentes nas apresentações
-CREATE TABLE IF NOT EXISTS aluno_has_apresentacao (
+CREATE TABLE IF NOT EXISTS apresentacao_aluno (
   aluno_id SERIAL,
   aluno_usuario_id SERIAL,
   apresentacao_id SERIAL,
   PRIMARY KEY (aluno_id, aluno_usuario_id, apresentacao_id),
     FOREIGN KEY (aluno_id , aluno_usuario_id)
-    REFERENCES aluno (id , usuario_id),
+    REFERENCES aluno (id , usuario_id) ON DELETE CASCADE,
     FOREIGN KEY (apresentacao_id)
-    REFERENCES apresentacao (id)
+    REFERENCES apresentacao (id) ON DELETE CASCADE
 );
 
-INSERT INTO aluno_has_apresentacao (aluno_id, aluno_usuario_id, apresentacao_id)
+INSERT INTO apresentacao_aluno (aluno_id, aluno_usuario_id, apresentacao_id)
 VALUES
 (1, 3, 1),
 (2, 4, 1),
@@ -184,17 +187,17 @@ VALUES
 (4, 6, 3);
 
 -- instrumentos das apresentações
-CREATE TABLE IF NOT EXISTS instrumento_has_apresentacao (
+CREATE TABLE IF NOT EXISTS apresentacao_instrumento (
   instrumento_id SERIAL,
   apresentacao_id SERIAL,
   PRIMARY KEY (apresentacao_id, instrumento_id),
     FOREIGN KEY (apresentacao_id)
-    REFERENCES apresentacao (id),
+    REFERENCES apresentacao (id) ON DELETE CASCADE,
     FOREIGN KEY (instrumento_id)
-    REFERENCES instrumento (id)
+    REFERENCES instrumento (id) ON DELETE CASCADE
 );
 
-INSERT INTO instrumento_has_apresentacao (instrumento_id, apresentacao_id)
+INSERT INTO apresentacao_instrumento (instrumento_id, apresentacao_id)
 VALUES
 (1, 1),
 (2, 2),
@@ -204,18 +207,18 @@ VALUES
 (2, 3);
 
 -- instrumentos dos alunos
-CREATE TABLE IF NOT EXISTS instrumento_has_aluno (
+CREATE TABLE IF NOT EXISTS aluno_instrumento (
   aluno_id SERIAL,
   aluno_usuario_id SERIAL,
   instrumento_id SERIAL,
   PRIMARY KEY (aluno_id, aluno_usuario_id, instrumento_id),
     FOREIGN KEY (aluno_id , aluno_usuario_id)
-    REFERENCES aluno (id , usuario_id),
+    REFERENCES aluno (id , usuario_id) ON DELETE CASCADE,
     FOREIGN KEY (instrumento_id)
-    REFERENCES instrumento (id)
+    REFERENCES instrumento (id) ON DELETE CASCADE
 );
 
-INSERT INTO instrumento_has_aluno (aluno_id, aluno_usuario_id, instrumento_id) 
+INSERT INTO aluno_instrumento (aluno_id, aluno_usuario_id, instrumento_id) 
 VALUES
 (1, 3, 1),
 (2, 4, 2),
@@ -275,7 +278,36 @@ SELECT *
 FROM aula
 WHERE tempoduracao>55 AND (professor_id = 2 OR professor_id = 1);
 
---
+-- selecionar nome do aluno e nome dos seus instrumentos respectivos
+SELECT usuario.nome AS "nome usuario", instrumento.nome AS "nome do instrumento"
+  FROM aluno_instrumento
+  JOIN usuario ON usuario.id = aluno_instrumento.aluno_usuario_id
+  JOIN instrumento ON instrumento.id = aluno_instrumento.instrumento_id;
 
 
+-- selecionando nome dos alunos e descricao das apresentacoes que cada aluno participou
+SELECT usuario.nome AS "nome do aluno", apresentacao.descricao AS "descricao da apresentacao"
+  FROM apresentacao_aluno
+  JOIN usuario ON usuario.id = apresentacao_aluno.aluno_usuario_id
+  JOIN apresentacao ON apresentacao.id = apresentacao_aluno.apresentacao_id;
+
+-- selecionando todos os alunos da apresentacao com o id 3
+SELECT usuario.nome AS "nome do aluno"
+  FROM apresentacao_aluno
+  JOIN usuario ON usuario.id = apresentacao_aluno.aluno_usuario_id
+WHERE apresentacao_aluno.apresentacao_id = 3;
+
+-- selecionando nome do aluno, descricao da apresentacao, data da apresentacao onde a descricao da aparesentacao =  Halloween 2021
+SELECT usuario.nome AS "nome do usuario", AP.descricao AS "descricao da apresentacao", AP.data_apresentacao AS "data apresentacao"
+  FROM apresentacao AS ap
+  JOIN apresentacao_aluno ON apresentacao_aluno.apresentacao_id = ap.id
+  JOIN usuario            ON usuario.id = apresentacao_aluno.aluno_usuario_id
+WHERE ap.descricao = 'Halloween 2021';
+
+-- selecionando nome do aluno, descricao da apresentacao, data da apresentacao onde a descricao da aparesentacao que tem Halloween no inicio da descrição
+SELECT usuario.nome AS "nome do usuario", AP.descricao AS "descricao da apresentacao", AP.data_apresentacao AS "data apresentacao"
+  FROM apresentacao AS ap
+  JOIN apresentacao_aluno ON apresentacao_aluno.apresentacao_id = ap.id
+  JOIN usuario            ON usuario.id = apresentacao_aluno.aluno_usuario_id
+WHERE ap.descricao LIKE 'Halloween%';
 
