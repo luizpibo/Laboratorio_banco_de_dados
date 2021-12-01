@@ -381,3 +381,112 @@ SELECT
 	FROM professor 
 	JOIN usuario ON professor.usuario_id = usuario.id
   WHERE professor.contratado;
+
+CREATE FUNCTION adicionaProfessor() RETURNS INTEGER AS '
+  SELECT (5+3) + 2
+' LANGUAGE SQL;
+
+-- recod seria atribuir qualquer tipo de retorno
+DROP FUNCTION busca_professores_por_salario
+CREATE FUNCTION busca_professores_por_salario(valor_salario DECIMAL) RETURNS SETOF professor AS $$
+	SELECT * FROM professor WHERE professor.salariobase > valor_salario;
+$$ LANGUAGE SQL;
+
+SELECT * from busca_professores_salario(2000);
+
+-- Funcao para adicionar um novo usuario 
+CREATE FUNCTION 
+  adiciona_usuario(
+    login varchar(50), 
+    senha varchar(50), 
+    nome varchar(50), 
+    telefone varchar(12), 
+    cpf varchar(15)
+  )
+  RETURNS void AS $$
+    
+  INSERT INTO usuario (login, senha, nome, telefone, cpf) values(login, senha, nome, telefone, cpf)
+
+  $$ LANGUAGE SQL; 
+
+SELECT adiciona_usuario('luizPibo', '1234554321', 'luiz fernandinho', '61983385897', '12341235122');
+-- Funcao para adicionar um novo professor 
+DROP FUNCTION adiciona_professor()
+CREATE FUNCTION adiciona_professor(salario_base REAL, data_admicao DATE, id_user INTEGER) RETURNS void AS $$
+	INSERT INTO professor (salarioBase, data_admicao, usuario_id) VALUES (salario_base, data_admicao, id_user)
+$$ LANGUAGE plpgsql;
+
+SELECT adiciona_professor(4500,'2021-12-01', 7);
+
+
+-- DELETE FROM usuario WHERE id = 7;
+-- SELECT * FROM professor
+
+-- plpgsql
+
+CREATE FUNCTION 
+  adiciona_usuario(
+    login varchar(50), 
+    senha varchar(50), 
+    nome varchar(50), 
+    telefone varchar(12), 
+    cpf varchar(15)
+  )
+  RETURNS boolean AS $$
+  BEGIN
+    INSERT INTO usuario (login, senha, nome, telefone, cpf) values(login, senha, nome, telefone, cpf);
+    RETURN true; 
+  END
+  $$ LANGUAGE plpgsql; 
+
+-- checagem
+
+CREATE OR REPLACE FUNCTION mostra_mensagem() RETURNS VARCHAR(50) AS $$
+  DECLARE
+    aux VARCHAR(50) DEFAULT 'oie';
+  BEGIN
+    RETURN aux; 
+  END
+$$ LANGUAGE plpgsql; 
+
+CREATE OR REPLACE FUNCTION salario_ok(professor professor) RETURNS VARCHAR AS $$
+  DECLARE
+    aux VARCHAR(50) DEFAULT 'oie';
+  BEGIN
+    IF professor.salariobase > 5000 THEN
+      RETURN 'Salário acima de R$ 5000';
+    END IF;
+    IF professor.salariobase < 2000 THEN
+      RETURN 'Salário abaixo de R$ 2000';
+    END IF;
+   RETURN 'Não entra na selecao';
+  END;
+$$ LANGUAGE plpgsql; 
+
+-- Selecionar todos os professores e checar qual deles tem salario acima de 5000 e os que tem salario a baixo de 2000
+SELECT usuario.nome, professor.salariobase, salario_ok(professor)
+FROM professor
+JOIN usuario ON usuario.id = professor.usuario_id;
+
+
+
+CREATE OR REPLACE FUNCTION faixa_salarial(professor professor) RETURNS VARCHAR AS $$
+  DECLARE
+    aux VARCHAR(50) DEFAULT 'oie';
+  BEGIN
+    CASE 
+      WHEN professor.salariobase<1000 THEN
+        RETURN 'salario menor que R$ 1000';
+      WHEN professor.salariobase<2000 THEN
+        RETURN 'salario menor que R$ 2000';
+      WHEN professor.salariobase<3000 THEN
+        RETURN 'salario menor que R$ 3000';
+      WHEN professor.salariobase>3000 THEN
+        RETURN 'salario superior a R$ 3000';
+    END CASE;
+  END;
+$$ LANGUAGE plpgsql; 
+
+SELECT usuario.nome, professor.salariobase, faixa_salarial(professor)
+FROM professor
+JOIN usuario ON usuario.id = professor.usuario_id;
