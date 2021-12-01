@@ -16,6 +16,10 @@
 -- Selects básicos
 -- Selects joins
 
+-- Adicionando coluna de contratado na tabela de professores
+-- ALTER TABLE professor ADD COLUMN contratado bolean DEFAULT true;
+
+
 DROP DATABASE IF EXISTS escola_de_musica; -- excluir database se existir
 
 -- usuario
@@ -41,7 +45,7 @@ VALUES
 -- aluno
 CREATE TABLE IF NOT EXISTS aluno (
   id SERIAL,
-  usuario_id SERIAL UNIQUE,
+  usuario_id SERIAL,
   PRIMARY KEY (id, usuario_id),
     FOREIGN KEY (usuario_id)
     REFERENCES usuario (id) ON DELETE CASCADE
@@ -81,7 +85,8 @@ INSERT INTO  apresentacao (data_apresentacao, descricao)
 VALUES 
 ('2019-12-31', 'virada de ano 2019'),
 ('2021-12-25', 'Natal 2021'),
-('2021-10-31', 'Halloween 2021');
+('2021-10-31', 'Halloween 2021'),
+('2022-10-31', 'Halloween 2022');
 
 -- instrumento
 CREATE TABLE IF NOT EXISTS instrumento (
@@ -117,8 +122,8 @@ INSERT INTO aula (descricao, tempoDuracao, linkAula, instrumento_id, professor_i
 VALUES
 ('saxofone', 55, 'www.EMB.gov.br/saxofone',1,1,1),
 ('trompete', 55, 'www.EMB.gov.br/trompete',2,2,2),
-('flauta', 120, 'www.EMB.gov.br/flauta',3,1,1),
-('clarinete', 90, 'www.EMB.gov.br/clarinete',4,2,2),
+('clarinete', 90, 'www.EMB.gov.br/clarinete',3,2,2),
+('flauta', 120, 'www.EMB.gov.br/flauta',4,1,1),
 ('baixoAcustico', 55, 'www.EMB.gov.br/baixoAcustico',5,1,1);
 
 -- prova
@@ -184,7 +189,10 @@ VALUES
 (1, 3, 3),
 (2, 4, 3),
 (3, 5, 3),
-(4, 6, 3);
+(4, 6, 3),
+(1, 3, 4),
+(2, 4, 4),
+(3, 5, 4);
 
 -- instrumentos das apresentações
 CREATE TABLE IF NOT EXISTS apresentacao_instrumento (
@@ -281,14 +289,14 @@ WHERE tempoduracao>55 AND (professor_id = 2 OR professor_id = 1);
 -- selecionar nome do aluno e nome dos seus instrumentos respectivos
 SELECT usuario.nome AS "nome usuario", instrumento.nome AS "nome do instrumento"
   FROM aluno_instrumento
-  JOIN usuario ON usuario.id = aluno_instrumento.aluno_usuario_id
+  JOIN usuario     ON usuario.id = aluno_instrumento.aluno_usuario_id
   JOIN instrumento ON instrumento.id = aluno_instrumento.instrumento_id;
 
 
 -- selecionando nome dos alunos e descricao das apresentacoes que cada aluno participou
 SELECT usuario.nome AS "nome do aluno", apresentacao.descricao AS "descricao da apresentacao"
   FROM apresentacao_aluno
-  JOIN usuario ON usuario.id = apresentacao_aluno.aluno_usuario_id
+  JOIN usuario      ON usuario.id = apresentacao_aluno.aluno_usuario_id
   JOIN apresentacao ON apresentacao.id = apresentacao_aluno.apresentacao_id;
 
 -- selecionando todos os alunos da apresentacao com o id 3
@@ -297,17 +305,79 @@ SELECT usuario.nome AS "nome do aluno"
   JOIN usuario ON usuario.id = apresentacao_aluno.aluno_usuario_id
 WHERE apresentacao_aluno.apresentacao_id = 3;
 
--- selecionando nome do aluno, descricao da apresentacao, data da apresentacao onde a descricao da aparesentacao =  Halloween 2021
+-- selecionando nomes do alunos, descricao da apresentacao, data da apresentacao onde a descricao da aparesentacao =  Halloween 2021
 SELECT usuario.nome AS "nome do usuario", AP.descricao AS "descricao da apresentacao", AP.data_apresentacao AS "data apresentacao"
   FROM apresentacao AS ap
   JOIN apresentacao_aluno ON apresentacao_aluno.apresentacao_id = ap.id
   JOIN usuario            ON usuario.id = apresentacao_aluno.aluno_usuario_id
 WHERE ap.descricao = 'Halloween 2021';
 
--- selecionando nome do aluno, descricao da apresentacao, data da apresentacao onde a descricao da aparesentacao que tem Halloween no inicio da descrição
+-- selecionando nomes do alunos, descricao da apresentacao, data da apresentacao onde a descricao da aparesentacao tem Halloween no inicio da descrição
 SELECT usuario.nome AS "nome do usuario", AP.descricao AS "descricao da apresentacao", AP.data_apresentacao AS "data apresentacao"
   FROM apresentacao AS ap
   JOIN apresentacao_aluno ON apresentacao_aluno.apresentacao_id = ap.id
   JOIN usuario            ON usuario.id = apresentacao_aluno.aluno_usuario_id
 WHERE ap.descricao LIKE 'Halloween%';
 
+-- selecionando nome dos alunos, descricao da apresentacao, data da apresentacao onde a descricao da aparesentacao tem Halloween no inicio da descrição ordenando por nome do aluno
+SELECT usuario.nome AS "nome do usuario", AP.descricao AS "descricao da apresentacao", AP.data_apresentacao AS "data apresentacao"
+  FROM apresentacao AS ap
+  JOIN apresentacao_aluno ON apresentacao_aluno.apresentacao_id = ap.id
+  JOIN usuario            ON usuario.id = apresentacao_aluno.aluno_usuario_id
+WHERE ap.descricao LIKE 'Halloween%'
+ORDER BY usuario.nome;
+
+-- Mostrar quantidade de alunos em cada apresentação
+SELECT AP.descricao AS "descricao da apresentacao", COUNT(AP.id) AS "Quantidade de alunos"
+  FROM apresentacao AS AP
+  JOIN apresentacao_aluno ON apresentacao_aluno.apresentacao_id = ap.id
+GROUP BY AP.descricao
+ORDER BY AP.descricao ASC;
+
+-- Selecionar descricao da aula, instrumento e nome do professor
+SELECT aula.descricao AS "Descrição da aula", instrumento.nome AS "Nome do instrumento", usuario.nome AS "Nome do professor"
+FROM aula
+JOIN usuario     ON usuario.id = aula.professor_usuario_id
+JOIN instrumento ON instrumento.id = aula.instrumento_id;
+
+-- Selecionar nome do aluno e quantidade de apresentações que o aluno participou
+SELECT usuario.nome AS "Nome do aluno", COUNT(usuario.id)
+FROM apresentacao_aluno
+JOIN usuario ON usuario.id = apresentacao_aluno.aluno_usuario_id
+GROUP BY usuario.nome
+ORDER BY usuario.nome;
+
+-- tempo de contrato dos professor ainda contratados
+SELECT 
+	usuario.nome AS "nome do professor", 
+	AGE(professor.data_admicao) AS "tempo de contrato" 
+	FROM professor 
+	JOIN usuario ON professor.usuario_id = usuario.id
+  WHERE professor.contratado;
+
+-- Viewers 
+
+-- VIEW para mostrar quantidade de alunos em cada apresentacao
+CREATE VIEW vw_quantidade_alunos_apresentacao AS 
+SELECT AP.descricao AS "descricao da apresentacao", COUNT(AP.id) AS "Quantidade de alunos"
+  FROM apresentacao AS AP
+  JOIN apresentacao_aluno ON apresentacao_aluno.apresentacao_id = ap.id
+GROUP BY AP.descricao
+ORDER BY AP.descricao ASC;
+
+-- view nome do aluno e quantidade de apresentacoes que ele participou
+CREATE VIEW vw_quantidade_de_apresentacoes_todos_alunos AS
+SELECT usuario.nome AS "Nome do aluno", COUNT(usuario.id)
+FROM apresentacao_aluno
+JOIN usuario ON usuario.id = apresentacao_aluno.aluno_usuario_id
+GROUP BY usuario.nome
+ORDER BY usuario.nome;
+
+-- view nome do professor e tempo de contrato ate agora
+CREATE VIEW vw_tempo_contrato_professor_now AS
+SELECT 
+	usuario.nome AS "nome do professor", 
+	AGE(professor.data_admicao) AS "tempo de contrato" 
+	FROM professor 
+	JOIN usuario ON professor.usuario_id = usuario.id
+  WHERE professor.contratado;
