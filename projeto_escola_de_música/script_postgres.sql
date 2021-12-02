@@ -490,3 +490,25 @@ $$ LANGUAGE plpgsql;
 SELECT usuario.nome, professor.salariobase, faixa_salarial(professor)
 FROM professor
 JOIN usuario ON usuario.id = professor.usuario_id;
+
+-- logs 
+
+CREATE TABLE log_professor (
+  id SERIAL,
+  description varchar(255) NOT NULL,
+  date_now DATE DEFAULT NOW()
+) 
+
+-- Triggers
+
+CREATE OR REPLACE FUNCTION 
+cria_professor()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO log_professor (descricao) values(NEW.usuario_id || 'Foi adicionado');
+  RETURN NEW;
+END
+$$ LANGUAGE plpgsql; 
+
+CREATE TRIGGER cria_log_professor AFTER INSERT ON professor
+  FOR EACH ROW EXECUTE FUNCTION cria_professor();
