@@ -1,5 +1,8 @@
 # Laboratorio_banco_de_dados
  
+## Scripts da professora
+<p> scripts que foram usados no aprendizado de SQL</p>
+
 ## Escola de música
 
 <p> Nesse repositório você irá encontrar </p>
