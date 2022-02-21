@@ -1,0 +1,30 @@
+-ORDER BY
+
+*Classifica os registros em ordem crescente por padrão.
+para classificar os registros em orgem decrescente, use a DESC palavra - chave.
+
+'
+SELECT coluna1, coluna2, ... 
+FROM table_name
+ORDER BY coluna1, coluna2 ... ASC/DESC;
+'
+
+Ele ordena um conjunto de dados de uma  ou mais colunas,
+ASC/DESC
+
+
+SELECT * from vendedores where salario<1000 order by salario;
+
+-FUNCTIONS
+SUM() faz o somatório de algum valor na coluna selecionada
+AVG() Media do somatório dos valores de uma coluna selecionada
+MAX() maior valor da coluna selecionada
+MIN() menor valor da coluna selecionada
+COUNT() conta os quantas linhas não nulas existem na coluna
+
+
+
+
+grupby
+
+having
